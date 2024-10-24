@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import SideBar from "@/components/SideBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +29,25 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <header>
+          <h1 className="text-2xl font-extrabold p-3">Araqque</h1>
+        </header>
+        <aside>
+          <SideBar />
+        </aside>
+        <main>
+      
+          {children}
+        </main>
+       
+        <footer>
+          <div className="flex justify-start p-3">
+            <div className="text-xs text-slate-600">
+                Araqque, Tüm Hakalrı Saklıdır.
+            </div>
+          </div>
+        </footer>
+        
       </body>
     </html>
   );
