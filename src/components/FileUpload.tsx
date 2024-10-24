@@ -68,7 +68,7 @@ export const FileUpload = () => {
       <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2">Ödev Dosyanızı Yükleyin.</li>
-          <li>'Testi Başlat'a tıklayın'.</li>
+          <li>&apos;Testi Başlat&apos;a tıklayın.</li>
         </ol>
         <form onSubmit={handleSubmit}>
           <div className="flex items-center justify-center w-full mb-3">

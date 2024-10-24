@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const POST = async (req:any, res: any) => {
+export const POST = async (req:any,) => {
   const formData = await req.formData();
 
   const file = formData.get("file");

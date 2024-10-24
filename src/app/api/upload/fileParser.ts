@@ -1,10 +1,9 @@
 
-const officeParser = require('officeparser');
+import officeParser from 'officeparser'
 
 
 
-
-export async function extractText(buffer: Buffer) : Promise<any> {
+export async function extractText(buffer: Buffer) : Promise<string> {
     return officeParser.parseOfficeAsync(buffer);
     
     
