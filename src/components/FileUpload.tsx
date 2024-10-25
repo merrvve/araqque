@@ -1,16 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { LoadingModal } from "./LoadingModal";
+import { LoadingState } from "@/types/loadingState";
+import useQuestionStore from '../stores/questionStore';
+import { Question } from '../types/question';
 
 export const FileUpload = () => {
-  const [file, setFile] = useState(null);
-
+  const [file, setFile] = useState<File | null>(null);
+  const [loadingState, setLoadingState] = useState<LoadingState>({
+    fileUploaded: false,
+    questionsPrepared: false,
+    questionCount: 0,
+    time: 0,
+    fileError: false,
+    questionsError: false})
+  const [openModal, setOpenModal] = useState(false);
   const handleFileChange = (e: any) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
   };
 
   const handleSubmit = async (e: any) => {
+    setOpenModal(true)
     e.preventDefault();
 
     if (!file) {
@@ -26,36 +38,49 @@ export const FileUpload = () => {
     formDataToSend.append("file", file); // Append the file
 
     try {
-      // Example: Send the form data using fetch to a hypothetical API endpoint
+      
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formDataToSend,
       });
 
       if (!response.ok) {
+        setLoadingState((prev) => ({ ...prev, fileError: true }));
         throw new Error("Dosya gönderilemedi");
+        
       }
       
       await response.json().then(result=> {
         console.log("Upload successful:", result);
-
+        setLoadingState((prev) => ({ ...prev, fileUploaded: true }));
       });
       
       try {
-        console.log("hello")
-        const response2 = await fetch("/api/openai", {
-          method: "POST",
-          body: JSON.stringify({text: "hello"}),
-        });
-        if (!response2.ok) {
-          console.log(response2)
-          throw new Error("Openai hata");
-        }
-        const result2 = await response2.json();
-        console.log("OpenAI:", result2);
+        setLoadingState((prev) => ({ ...prev, questionsError: true, questionsPrepared:false }));
+      //   const { questions, addQuestion, removeQuestion, clearQuestions } = useQuestionStore();
+      //   const newQuestion: Question = {
+      //     id: questions.length + 1,
+      //     questionStr: "Soru",
+      //     choices: ['seçenek 1','seçenek 2'],
+      //     answer:'seçenek 1',
+      // };
+      // addQuestion(newQuestion);
+
+        // console.log("hello")
+        // const response2 = await fetch("/api/openai", {
+        //   method: "POST",
+        //   body: JSON.stringify({text: "hello"}),
+        // });
+        // if (!response2.ok) {
+        //   setLoadingState({...loadingState,questionsError:false})
+        //   console.log(response2)
+        //   throw new Error("Openai hata");
+        // }
+        // const result2 = await response2.json();
+        // setLoadingState({...loadingState,questionsPrepared:true})
       }
       catch (error) {
-        console.error("Error uploading file:", error);
+        console.error("Error openai:", error);
       }
       
     } catch (error) {
@@ -64,11 +89,15 @@ export const FileUpload = () => {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-10 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+        <p>
+        Merhaba. Araqque'ye hoşgeldiniz. <br /> Lütfen aşağıdaki adımları takip ederek testi başlatın.
+        </p>
+        
+        <ol className="list-inside list-decimal text-sm text-center sm:text-left">
           <li className="mb-2">Ödev Dosyanızı Yükleyin.</li>
-          <li>&apos;Testi Başlat&apos;a tıklayın.</li>
+          <li>&apos;Testi Oluştur&apos;a tıklayın.</li>
         </ol>
         <form onSubmit={handleSubmit}>
           <div className="flex items-center justify-center w-full mb-3">
@@ -93,8 +122,7 @@ export const FileUpload = () => {
                   />
                 </svg>
                 <p className="m-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click to upload</span> or drag
-                  and drop
+                  <span className="font-semibold">Dosya yüklemek için tıklayın</span> ya da dosyayı bu alana sürükleyin
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   PDF, PPT, PPTX, DOC, DOCX, TXT
@@ -111,9 +139,16 @@ export const FileUpload = () => {
               />
             </label>
           </div>
-          <div className="flex gap-4 items-center flex-col sm:flex-row">
+          {
+            file && 
+            <>
+              <div className="mt-3 mb-3 text-lg font-bold">{file?.name }</div>
+            </>
+          }
+          
+          <div className="flex gap-4 sm:justify-between flex-col sm:flex-row">
             <a
-              className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
+              className="rounded-lg border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4  sm:min-w-44"
               href="/about"
               target="_blank"
               rel="noopener noreferrer"
@@ -122,7 +157,7 @@ export const FileUpload = () => {
             </a>
             <button
               type="submit"
-              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+              className="rounded-lg border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 "
             >
               <svg
                 width="15"
@@ -138,11 +173,16 @@ export const FileUpload = () => {
                   clipRule="evenodd"
                 ></path>
               </svg>
-              Testi Başlat
+              Testi Oluştur
             </button>
           </div>
         </form>
       </div>
+      {
+        <>
+          <LoadingModal loadingState={loadingState} openModal={openModal} setOpenModal={setOpenModal}/>
+        </>
+      }
     </div>
   );
 };
