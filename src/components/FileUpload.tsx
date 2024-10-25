@@ -6,6 +6,7 @@ import { LoadingState } from "@/types/loadingState";
 import useQuestionStore from '../stores/questionStore';
 import { Question } from '../types/question';
 
+
 export const FileUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -20,6 +21,14 @@ export const FileUpload = () => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
   };
+  const { questions, addQuestion, removeQuestion, clearQuestions } = useQuestionStore();
+  const newQuestion: Question = {
+    id: questions.length + 1,
+    questionStr: "Örnek Soru?",
+    choices: ['seçenek 1','seçenek 2'],
+    answer:'seçenek 1',
+};
+  
 
   const handleSubmit = async (e: any) => {
     setOpenModal(true)
@@ -56,16 +65,11 @@ export const FileUpload = () => {
       });
       
       try {
-        setLoadingState((prev) => ({ ...prev, questionsError: true, questionsPrepared:false }));
-      //   const { questions, addQuestion, removeQuestion, clearQuestions } = useQuestionStore();
-      //   const newQuestion: Question = {
-      //     id: questions.length + 1,
-      //     questionStr: "Soru",
-      //     choices: ['seçenek 1','seçenek 2'],
-      //     answer:'seçenek 1',
-      // };
-      // addQuestion(newQuestion);
-
+        setLoadingState((prev) => ({ ...prev, questionsError: false, questionsPrepared:true }));
+        
+      addQuestion(newQuestion);
+      console.log(questions)
+      
         // console.log("hello")
         // const response2 = await fetch("/api/openai", {
         //   method: "POST",
@@ -92,7 +96,7 @@ export const FileUpload = () => {
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-10 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <p>
-        Merhaba. Araqque'ye hoşgeldiniz. <br /> Lütfen aşağıdaki adımları takip ederek testi başlatın.
+        Merhaba. Araqque&apos;ye hoşgeldiniz. <br /> Lütfen aşağıdaki adımları takip ederek testi başlatın.
         </p>
         
         <ol className="list-inside list-decimal text-sm text-center sm:text-left">

@@ -5,11 +5,12 @@ import { LoadingState } from "@/types/loadingState";
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { ErrorMessage } from "./ErrorMessage";
+import { useRouter } from 'next/navigation';
 
 export function LoadingModal( props:any) {
     const { loadingState, openModal, setOpenModal } = props;
-    console.log(loadingState);
-  
+    
+  const router = useRouter();
   return (
     <>
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -46,8 +47,8 @@ export function LoadingModal( props:any) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setOpenModal(false)} disabled={loadingState.questionsError}>Testi Başlat</Button>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
+          <Button onClick={() => {setOpenModal(false); router.push('/student/quiz')}} disabled={loadingState.questionsError}>Testi Başlat</Button>
+          <Button color="gray" onClick={() => {setOpenModal(false)}}>
             İptal
           </Button>
         </Modal.Footer>
