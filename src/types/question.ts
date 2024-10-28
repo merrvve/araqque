@@ -1,6 +1,9 @@
 export interface Question {
     id: number;
-    questionStr: string;
+    question_type: string;
+    question: string;
     choices: string[];
-    answer: string;
+    correct_answer: string;
+    student_answer?: string;
+    completion_time?: number;
 }

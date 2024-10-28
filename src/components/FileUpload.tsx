@@ -24,10 +24,12 @@ export const FileUpload = () => {
   const { questions, addQuestion, removeQuestion, clearQuestions } = useQuestionStore();
   const newQuestion: Question = {
     id: questions.length + 1,
-    questionStr: "Örnek Soru?",
-    choices: ['seçenek 1','seçenek 2'],
-    answer:'seçenek 1',
-};
+    question: "Örnek Soru?",
+    choices: ['seçenek 1', 'seçenek 2'],
+    correct_answer: 'seçenek 1',
+    question_type: "Çoktan Seçmeli Test Sorusu"
+  };
+  let homeworkText = "";
   
 
   const handleSubmit = async (e: any) => {
@@ -58,35 +60,42 @@ export const FileUpload = () => {
         throw new Error("Dosya gönderilemedi");
         
       }
-      
-      await response.json().then(result=> {
-        console.log("Upload successful:", result);
+      else {
         setLoadingState((prev) => ({ ...prev, fileUploaded: true }));
-      });
-      
-      try {
-        setLoadingState((prev) => ({ ...prev, questionsError: false, questionsPrepared:true }));
-        
-      addQuestion(newQuestion);
-      console.log(questions)
-      
-        // console.log("hello")
-        // const response2 = await fetch("/api/openai", {
-        //   method: "POST",
-        //   body: JSON.stringify({text: "hello"}),
-        // });
-        // if (!response2.ok) {
-        //   setLoadingState({...loadingState,questionsError:false})
-        //   console.log(response2)
-        //   throw new Error("Openai hata");
-        // }
-        // const result2 = await response2.json();
-        // setLoadingState({...loadingState,questionsPrepared:true})
+        const homeworkResult = await response.json();
+        homeworkText = homeworkResult.Result.extractedText;
+        console.log(homeworkText)
+        try {
+          
+  
+          const openaiResponse = await fetch("/api/openai", {
+            method: "POST",
+            body: JSON.stringify({ text: homeworkText }),
+          });
+          if (!openaiResponse.ok) {
+            setLoadingState({ ...loadingState, questionsError: false });
+            console.log(openaiResponse);
+            throw new Error("Openai hata");
+          }
+          const qas = await openaiResponse.json();
+          const questionsList = JSON.parse(qas.result).questions;
+          setLoadingState((prev) => ({
+            ...prev,
+            questionsError: false,
+            questionsPrepared: true,
+            questionCount: questionsList.length,
+            time: 15
+          }));
+          questionsList.forEach((question: Question) => {
+            addQuestion(question)
+          });
+          
+          console.log(questions);
+        } catch (error) {
+          console.error("Error openai:", error);
+        }
       }
-      catch (error) {
-        console.error("Error openai:", error);
-      }
-      
+   
     } catch (error) {
       console.error("Error uploading file:", error);
     }

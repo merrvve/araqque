@@ -19,7 +19,11 @@ export function LoadingModal( props:any) {
           <div className="space-y-6">
             <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 {
-                   loadingState.fileUploaded ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : 'Dosya Yükleniyor...' 
+                   loadingState.fileUploaded ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : (
+                    <>
+                      Dosya yükleniyor <span className="spinner m-3"></span>
+                    </>
+                  ) 
                 }
                 {
                    loadingState.fileError && <ErrorMessage>Dosya içeriği alınamadı</ErrorMessage>
@@ -28,7 +32,11 @@ export function LoadingModal( props:any) {
             </div>
             <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 {
-                   loadingState.questionsPrepared ? 'Test Oluşturuldu' : loadingState.questionsError ?  '' : 'Test Oluşturuluyor'
+                   loadingState.questionsPrepared ? 'Test Oluşturuldu' : loadingState.questionsError ?  '' : (
+                    <>
+                      Test Oluşturuluyor... <span className="spinner m-3"></span>
+                    </>
+                  )
                 }
                 {
                    loadingState.questionsError && <ErrorMessage>Sorular oluşturulamadı</ErrorMessage>
