@@ -1,9 +1,8 @@
 
 "use client";
 
-import { LoadingState } from "@/types/loadingState";
+
 import { Button, Modal } from "flowbite-react";
-import { useState } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +20,7 @@ export function LoadingModal( props:any) {
                 {
                    loadingState.fileUploaded ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : (
                     <>
-                      Dosya yükleniyor <span className="spinner m-3"></span>
+                      Dosya yükleniyor <span className="loader m-3"></span>
                     </>
                   ) 
                 }
@@ -34,7 +33,7 @@ export function LoadingModal( props:any) {
                 {
                    loadingState.questionsPrepared ? 'Test Oluşturuldu' : loadingState.questionsError ?  '' : (
                     <>
-                      Test Oluşturuluyor... <span className="spinner m-3"></span>
+                      Test Oluşturuluyor... <span className="loader m-3"></span>
                     </>
                   )
                 }

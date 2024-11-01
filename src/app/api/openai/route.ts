@@ -169,28 +169,28 @@ export async function POST(req:any) {
     }
     `;
 
-    //return NextResponse.json({result: sampleResponse});
-      try {
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-2024-08-06", // Make sure to use a model supporting structured outputs.
-          messages: [
-            {
-              role: "system",
-              content: "You are an assistant that generates structured questions for exams based on input text.",
-            },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          response_format: { "type": "json_object" },
-        });
+    return NextResponse.json({result: sampleResponse});
+      // try {
+      //   const response = await openai.chat.completions.create({
+      //     model: "gpt-4o-2024-08-06", // Make sure to use a model supporting structured outputs.
+      //     messages: [
+      //       {
+      //         role: "system",
+      //         content: "You are an assistant that generates structured questions for exams based on input text.",
+      //       },
+      //       {
+      //         role: "user",
+      //         content: prompt,
+      //       },
+      //     ],
+      //     response_format: { "type": "json_object" },
+      //   });
     
     
-        return NextResponse.json({result: response.choices[0].message.content});
-      } catch (error) {
-        return NextResponse.json({ Message: error, status: 500 });
-      }
+      //   return NextResponse.json({result: response.choices[0].message.content});
+      // } catch (error) {
+      //   return NextResponse.json({ Message: error, status: 500 });
+      // }
   } else {
     return NextResponse.json({ Message: 'No Text Input', status: 500 });
   }

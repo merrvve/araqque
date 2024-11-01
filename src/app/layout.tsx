@@ -30,7 +30,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header>
+          <a href={'/'}>
           <h1 className="text-2xl font-extrabold p-3">Araqque</h1>
+          </a>
+          
         </header>
         <aside>
           <SideBar />
