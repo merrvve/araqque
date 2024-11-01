@@ -79,6 +79,7 @@ export const FileUpload = () => {
           }
           const qas = await openaiResponse.json();
           const questionsList = JSON.parse(qas.result).questions;
+          console.log(qas,questions)
           setLoadingState((prev) => ({
             ...prev,
             questionsError: false,
