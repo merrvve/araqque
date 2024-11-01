@@ -88,7 +88,7 @@ export default function Quiz() {
               <ul>
               {questions.map((question, index)=>(
                 <li key={index}>
-                    {question.correct_answer.toLowerCase() === answers[index].toLocaleLowerCase() ? 'Doğru' : 'Yanlış'}
+                    {question.correct_answer?.toLowerCase() === answers[index]?.toLowerCase() ? 'Doğru' : 'Yanlış'}
                 </li>
               ))}
               </ul>
