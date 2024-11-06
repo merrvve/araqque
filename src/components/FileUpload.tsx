@@ -33,17 +33,19 @@ export const FileUpload = () => {
   
 
   const handleSubmit = async (e: any) => {
-    setOpenModal(true)
+    
     e.preventDefault();
 
     if (!file) {
       alert("Lütfen bir dosya yükleyiniz");
       return;
     }
+    if (file.size > 5242880) {
+      alert("Yüklenecek dosya 5 MB'tan daha büyük olamaz");
+      return;
+    }
 
-    // You can log the form data and file for debugging
-
-    // Prepare the form data to send, for example, to an API endpoint
+    setOpenModal(true);
     const formDataToSend = new FormData();
 
     formDataToSend.append("file", file); // Append the file
@@ -57,14 +59,15 @@ export const FileUpload = () => {
 
       if (!response.ok) {
         setLoadingState((prev) => ({ ...prev, fileError: true }));
-        throw new Error("Dosya gönderilemedi");
-        
+        throw new Error("Dosya gönderilemedi. "+ response.statusText);
       }
       else {
         setLoadingState((prev) => ({ ...prev, fileUploaded: true }));
         const homeworkResult = await response.json();
         homeworkText = homeworkResult.Result.extractedText;
-        console.log(homeworkText)
+        const wordCount = homeworkResult.Result.wordCount;
+        
+        console.log(wordCount, "word count")
         try {
           
   
@@ -149,7 +152,6 @@ export const FileUpload = () => {
                 className="hidden"
                 onChange={handleFileChange}
                 accept=".pdf,.ppt,.pptx,.txt,.doc,.docx"
-                required
               />
             </label>
           </div>

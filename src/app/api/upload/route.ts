@@ -25,8 +25,11 @@ export const POST = async (req:any, res: any) => {
     else {
         extractedText = await extractText(buffer);
     }
-    
-    return NextResponse.json({ Message: "Success", Result: {extractedText} ,status: 201 });
+    const wordCount = extractedText.split(" ").length;
+    if(wordCount>20000) {
+      return NextResponse.json({ Message: "Failed, the file word count is bigger than 20.000 words.", status: 500 });
+    }
+    return NextResponse.json({ Message: "Success", Result: {extractedText, wordCount} ,status: 201 });
 
   } catch (error) {
     console.log("Error occured ", error);

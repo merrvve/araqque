@@ -17,8 +17,8 @@ export async function POST(req:any) {
       - Cevap [i]: [Doğru veya Yanlış]
 
     - *Boşluk Doldurma Soruları*: 3 adet
-      - Soru [i]: [Metin içerisinde eksik bırakılan kısımlar]
-      - Cevap [i]: [Eksik kısma gelecek doğru kelime veya kelime öbeği]
+      - Soru [i]: [Metin içerisinde eksik bırakılan kısım (tek kelimelik)]
+      - Cevap [i]: [Eksik kısma gelecek doğru kelime]
 
     - *Çoktan Seçmeli Test Soruları*: 3 adet
       - Soru [i]: [Soru metni]
@@ -26,12 +26,13 @@ export async function POST(req:any) {
       - B) [Seçenek B]
       - C) [Seçenek C]
       - D) [Seçenek D]
-      - Cevap [i]: [Doğru Seçenek]
+      - Cevap [i]: [Doğru Seçenek (A, B, C veya D şeklinde yalnızca tek harf)]
 
     **Ödev Metni**:
     "${text}"
     
     **Geri Dönen JSON Formatı**:
+    "questions":
     [
       {
         "id" : 0,
@@ -39,26 +40,21 @@ export async function POST(req:any) {
         "question": "Soru metni",
         "choices": ["Doğru", "Yanlış"],
         "correct_answer": "Doğru",
-        "student_answer": "",
-        "completion_time": ""
       },
       {
         "id" : 1,
         "question_type": "Boşluk Doldurma Sorusu",
-        "question": "Metin eksikliğini içeren soru metni",
-        "choices": ["Doğru kelime veya kelime öbeği"],
-        "correct_answer": "Doğru kelime veya kelime öbeği",
-        "student_answer": "",
-        "completion_time": ""
+        "question": "Kelime eksikliğini içeren soru metni",
+        "choices": ["Doğru kelime"],
+        "correct_answer": "Doğru kelime",
       },
       {
         "id" : 2,
         "question_type": "Çoktan Seçmeli Test Sorusu",
         "question": "Soru metni",
-        "choices": ["A", "B", "C", "D"],
+        "choices": ["A) Seçenek", "B) Seçenek", "C) Seçenek", "D) seçenek"],
         "correct_answer": "A",
-        "student_answer": "",
-        "completion_time": ""
+
       }
     ]
   `;
