@@ -15,22 +15,33 @@ export const FileUpload = () => {
     questionCount: 0,
     time: 0,
     fileError: false,
-    questionsError: false})
+    questionsError: false,
+    statusText: "Dosya Yükleniyor"
+  })
   const [openModal, setOpenModal] = useState(false);
   const handleFileChange = (e: any) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
   };
-  const { questions, addQuestion, removeQuestion, clearQuestions } = useQuestionStore();
-  const newQuestion: Question = {
-    id: questions.length + 1,
-    question: "Örnek Soru?",
-    choices: ['seçenek 1', 'seçenek 2'],
-    correct_answer: 'seçenek 1',
-    question_type: "Çoktan Seçmeli Test Sorusu"
-  };
+  const { questions, addQuestion, clearQuestions } = useQuestionStore();
+  
   let homeworkText = "";
   
+  function selectQuestions(questionList1 : Question[],questionList2: Question[]) {
+    let selectedQuestions: Question[] = [];
+    selectedQuestions = selectedQuestions
+      .concat(questionList1.filter(x=>x.question_type==="Doğru Yanlış Sorusu").slice(0,2))
+      .concat(questionList2.filter(x=>x.question_type==="Doğru Yanlış Sorusu")[1])
+      .concat(questionList1.filter(x=>x.question_type==="Boşluk Doldurma Sorusu")[1])
+      .concat(questionList2.filter(x=>x.question_type==="Boşluk Doldurma Sorusu").slice(0,2))
+      .concat(questionList1.filter(x=>x.question_type==="Çoktan Seçmeli Test Sorusu").slice(1,3))
+      .concat(questionList2.filter(x=>x.question_type==="Çoktan Seçmeli Test Sorusu")[0])
+      
+    ;
+
+    console.log(selectedQuestions)
+    return selectedQuestions;
+  }
 
   const handleSubmit = async (e: any) => {
     
@@ -59,6 +70,9 @@ export const FileUpload = () => {
 
       if (!response.ok) {
         setLoadingState((prev) => ({ ...prev, fileError: true }));
+        setLoadingState((prev) => ({ ...prev, statusText: "Dosya Yüklenemedi. " }));
+        
+        console.log(response)
         throw new Error("Dosya gönderilemedi. "+ response.statusText);
       }
       else {
@@ -66,38 +80,83 @@ export const FileUpload = () => {
         const homeworkResult = await response.json();
         homeworkText = homeworkResult.Result.extractedText;
         const wordCount = homeworkResult.Result.wordCount;
-        
-        console.log(wordCount, "word count")
-        try {
-          
-  
-          const openaiResponse = await fetch("/api/openai", {
-            method: "POST",
-            body: JSON.stringify({ text: homeworkText }),
-          });
-          if (!openaiResponse.ok) {
-            setLoadingState({ ...loadingState, questionsError: false });
-            console.log(openaiResponse);
-            throw new Error("Openai hata");
-          }
-          const qas = await openaiResponse.json();
-          const questionsList = JSON.parse(qas.result).questions;
-          console.log(qas,questions)
-          setLoadingState((prev) => ({
-            ...prev,
-            questionsError: false,
-            questionsPrepared: true,
-            questionCount: questionsList.length,
-            time: 15
-          }));
-          questionsList.forEach((question: Question) => {
-            addQuestion(question)
-          });
-          
-          console.log(questions);
-        } catch (error) {
-          console.error("Error openai:", error);
+        setLoadingState((prev) => ({ ...prev, statusText: `Yüklenen dosyada yaklaşık ${wordCount} adet kelime tespit edildi.` }));
+        if(wordCount>40000) {
+                
+          setLoadingState((prev) => ({ ...prev, fileError: true, statusText: "Yüklenen dosya 40.000'den fazla kelime içermektedir." }));
+          return;
         }
+        if(wordCount<20001) {
+          try { 
+            const openaiResponse = await fetch("/api/openai", {
+              method: "POST",
+              body: JSON.stringify({ text: homeworkText }),
+            });
+            if (!openaiResponse.ok) {
+              setLoadingState({ ...loadingState, questionsError: true, statusText:"Sorular oluşturulurken bir hata ile karşılaşıldı." });
+              console.log(openaiResponse);
+              throw new Error("Openai hata");
+            }
+            const qas = await openaiResponse.json();
+            const questionsList = JSON.parse(qas.result).questions;
+      
+            setLoadingState((prev) => ({
+              ...prev,
+              questionsError: false,
+              questionsPrepared: true,
+              questionCount: questionsList.length,
+              time: 15,
+              statusText: "Test oluşturma işlemi başarılı."
+            }));
+            clearQuestions();
+            questionsList.forEach((question: Question) => {
+              addQuestion(question)
+            });
+            
+            console.log(questions);
+          } catch (error) {
+            setLoadingState({ ...loadingState, questionsError: true, statusText:"Sorular oluşturulurken bir hata ile karşılaşıldı." });
+            console.error("Error openai:", error);
+          }
+        }
+        else if(20000<wordCount && wordCount<40000) {
+          setLoadingState((prev) => ({ ...prev, statusText: `Yüklenen dosyada yaklaşık ${wordCount} adet kelime tespit edildi. Test oluşturma işlemi iki adımda gerçekleştirilecektir. Bu işlem birkaç dakikanızı alabilir. ` }));
+          try{
+            const openaiResponse1 = await fetch("/api/openai", {
+              method: "POST",
+              body: JSON.stringify({ text: homeworkText.slice(0,wordCount/2) }),
+            });
+            const openaiResponse2 = await fetch("/api/openai", {
+              method: "POST",
+              body: JSON.stringify({ text: homeworkText.slice(wordCount/2) }),
+            });
+            const qas1 = await openaiResponse1.json();
+            const questionsList1 = JSON.parse(qas1.result).questions;
+      
+            const qas2 = await openaiResponse2.json();
+            const questionsList2 = JSON.parse(qas2.result).questions;
+
+            const selectedQuestions = selectQuestions(questionsList1,questionsList2)
+            
+            setLoadingState((prev) => ({
+              ...prev,
+              questionsError: false,
+              questionsPrepared: true,
+              questionCount: selectedQuestions.length,
+              time: 15,
+              statusText: "Test oluşturma işlemi başarılı."
+            }));
+            clearQuestions();
+            selectedQuestions.forEach((question: Question) => {
+              addQuestion(question)
+            });
+          }
+          catch (error) {
+            setLoadingState({ ...loadingState, questionsError: true, statusText:"Sorular oluşturulurken bir hata ile karşılaşıldı." });
+            console.error("Error openai:", error);
+          }
+        }
+        
       }
    
     } catch (error) {
@@ -143,6 +202,9 @@ export const FileUpload = () => {
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   PDF, PPT, PPTX, DOC, DOCX, TXT
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Maksimum 5 MB, 40.000 kelime
                 </p>
               </div>
               <input

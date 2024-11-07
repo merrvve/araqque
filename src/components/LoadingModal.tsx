@@ -18,7 +18,7 @@ export function LoadingModal( props:any) {
           <div className="space-y-6">
             <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 {
-                   loadingState.fileUploaded ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : (
+                   loadingState.fileUploaded && !loadingState.fileError ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : (
                     <>
                       Dosya yükleniyor <span className="loader m-3"></span>
                     </>
@@ -29,9 +29,12 @@ export function LoadingModal( props:any) {
                 }
               
             </div>
+            <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400 mb-3">
+              {loadingState?.statusText}
+            </div>
             <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 {
-                   loadingState.questionsPrepared ? 'Test Oluşturuldu' : loadingState.questionsError ?  '' : (
+                   loadingState.questionsPrepared ? 'Test Oluşturuldu' : loadingState.questionsError || loadingState.fileError ?  '' : (
                     <>
                       Test Oluşturuluyor... <span className="loader m-3"></span>
                     </>

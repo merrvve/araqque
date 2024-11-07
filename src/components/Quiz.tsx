@@ -110,8 +110,8 @@ export default function Quiz() {
           <div>
             <strong className="underline">Doğru Cevaplar:</strong>
             <ul>
-              {questions.map((question) => (
-                  <li key={question.id}>{question.correct_answer}</li>
+              {questions.map((question,index) => (
+                  <li key={index}>{question.correct_answer}</li>
                 
               ))}
             </ul>

@@ -5,6 +5,6 @@ export interface LoadingState {
     time: number;
     fileError: boolean;
     questionsError: boolean;
-
+    statusText: string;
 
 }
