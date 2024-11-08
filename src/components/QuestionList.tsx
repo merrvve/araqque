@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// components/QuestionList.tsx
-
+import { Label, Radio } from "flowbite-react";
 
 import useQuestionStore from "../stores/questionStore";
 
@@ -15,7 +14,6 @@ type QuestionState = {
 
 const QuestionList: React.FC<QuestionState> = ({ activeQuestion, quizState, answers, setAnswers }) => {
   const { questions, updateQuestionTime } = useQuestionStore();
-  const choices = ["A", "B", "C", "D"]
   // Track the start time for each question
   const [startTime, setStartTime] = useState<number | null>(null);
 
@@ -39,34 +37,32 @@ const QuestionList: React.FC<QuestionState> = ({ activeQuestion, quizState, answ
     <div className="flex flex-col mx-auto p-10 w-screen sm:w-[500px]">
       {questions[activeQuestion] && activeQuestion < 9 && quizState && (
         <>
-          <h1 className="text-2xl font-bold mb-5">Sorular</h1>
+          
           <ul>
             <li key={questions[activeQuestion].id} className="mb-5">
-              <h5 className="text-xl font-bold underline mb-2">
-                Soru No: {questions[activeQuestion].id + 1}
+              <h5 className="text-xl font-bold underline mb-5">
+                Soru No: {activeQuestion + 1}
               </h5>
 
-              <p>
-                <strong className="m-2">Soru:</strong>
+              <p className="mb-2 text-xl">
                 {questions[activeQuestion].question}
               </p>
 
               {questions[activeQuestion].question_type !== "Boşluk Doldurma Sorusu" ? (
                 <>
-                  <strong className="m-2">Seçenekler:</strong>
                   {questions[activeQuestion].choices.map((choice, index) => (
-                    <div className="ml-3" key={choice}>
-                      <label className="p-2">
-                        <input
-                        className="p-2"
-                          type="radio"
+                    <div className="flex gap-3" key={choice}>
+                      
+                        <Radio
+                          className="m-1"
                           name={`question_${questions[activeQuestion].id}`} // Grouping for radio buttons
                           value={choice }
                           checked={questions[activeQuestion].question_type === "Çoktan Seçmeli Test Sorusu" ? (answers[activeQuestion].slice(0,1) === choice.slice(0,1)) : answers[activeQuestion] === choice}
                           onChange={(e) => setAnswers(activeQuestion, e.target.value)} // Update answers on change
                         />
+                        <Label className="text-lg">
                         {choice}
-                      </label>
+                      </Label>
                     </div>
                   ))}
                 </>

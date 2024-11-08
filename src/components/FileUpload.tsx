@@ -61,6 +61,15 @@ export const FileUpload = () => {
 
     formDataToSend.append("file", file); // Append the file
 
+    setLoadingState({
+      fileUploaded: false,
+      questionsPrepared: false,
+      questionCount: 0,
+      time: 0,
+      fileError: false,
+      questionsError: false,
+      statusText: "Dosya Yükleniyor"
+    })
     try {
       
       const response = await fetch("/api/upload", {
@@ -98,22 +107,28 @@ export const FileUpload = () => {
               throw new Error("Openai hata");
             }
             const qas = await openaiResponse.json();
-            const questionsList = JSON.parse(qas.result).questions;
-      
-            setLoadingState((prev) => ({
-              ...prev,
-              questionsError: false,
-              questionsPrepared: true,
-              questionCount: questionsList.length,
-              time: 15,
-              statusText: "Test oluşturma işlemi başarılı."
-            }));
-            clearQuestions();
-            questionsList.forEach((question: Question) => {
-              addQuestion(question)
-            });
+            try {const questionsList = JSON.parse(qas.result).questions;
+              setLoadingState((prev) => ({
+                ...prev,
+                questionsError: false,
+                questionsPrepared: true,
+                questionCount: questionsList.length,
+                time: 15,
+                statusText: "Test oluşturma işlemi başarılı."
+              }));
+              clearQuestions();
+              questionsList.forEach((question: Question) => {
+                addQuestion(question)
+              });
+              
+              console.log(questions);
+            }
+            catch(error) {
+              setLoadingState({ ...loadingState, questionsError: true, statusText:"Sorular oluşturulurken bir hata ile karşılaşıldı." });
+            console.error("Error openai:", error);
+            }
             
-            console.log(questions);
+            
           } catch (error) {
             setLoadingState({ ...loadingState, questionsError: true, statusText:"Sorular oluşturulurken bir hata ile karşılaşıldı." });
             console.error("Error openai:", error);

@@ -18,7 +18,7 @@ export function LoadingModal( props:any) {
           <div className="space-y-6">
             <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 {
-                   loadingState.fileUploaded && !loadingState.fileError ? 'Dosya Yüklendi' : loadingState.fileError ?  '' : (
+                   loadingState.fileUploaded && !loadingState.fileError ? 'Dosya Yüklendi' : loadingState.fileError || loadingState.questionsError ?  '' : (
                     <>
                       Dosya yükleniyor <span className="loader m-3"></span>
                     </>

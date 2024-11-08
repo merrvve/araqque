@@ -9,7 +9,7 @@ export async function POST(req:any) {
   const { text } = await req.json();
   
   // Define a clear and structured prompt for generating questions in Turkish
-  const prompt = `
+  const systemPrompt = `
     Aşağıdaki ödev metnine dayanarak, ödevin hazırlandığı dilde toplam 9 soru oluştur. Aşağıdaki formatı kullanarak her soru için doğru cevabı da ekle:
     
     - *Doğru-Yanlış Soruları*: 3 adet
@@ -28,8 +28,7 @@ export async function POST(req:any) {
       - D) [Seçenek D]
       - Cevap [i]: [Doğru Seçenek (A, B, C veya D şeklinde yalnızca tek harf)]
 
-    **Ödev Metni**:
-    "${text}"
+    
     
     **Geri Dönen JSON Formatı**:
     "questions":
@@ -59,6 +58,10 @@ export async function POST(req:any) {
     ]
   `;
 
+  const userPrompt = `
+  **Ödev Metni**:
+    "${text}"`
+
   // Check if text exists
   if (text) {
   //   const response = await openai.chat.completions.create({
@@ -85,81 +88,63 @@ export async function POST(req:any) {
           "question_type": "Doğru Yanlış Sorusu",
           "question": "Türkiye Cumhuriyeti'nin kuruluşu 29 Ekim 1923'te gerçekleşmiştir.",
           "choices": ["Doğru", "Yanlış"],
-          "correct_answer": "Doğru",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "Doğru"
         },
         {
           "id": 1,
           "question_type": "Doğru Yanlış Sorusu",
           "question": "Osmanlı İmparatorluğu'nun çöküş süreci I. Dünya Savaşı sonrasında yavaşlamıştır.",
           "choices": ["Doğru", "Yanlış"],
-          "correct_answer": "Yanlış",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "Yanlış"
         },
         {
           "id": 2,
           "question_type": "Doğru Yanlış Sorusu",
           "question": "Amasya Genelgesi, Türk Kurtuluş Savaşı sırasında bağımsızlık ruhunun örgütlendiği toplantılardan biridir.",
           "choices": ["Doğru", "Yanlış"],
-          "correct_answer": "Doğru",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "Doğru"
         },
         {
           "id": 3,
           "question_type": "Boşluk Doldurma Sorusu",
           "question": "Mustafa Kemal Atatürk, 19 Mayıs 1919'da __________ çıkarak ulusal direnişi başlatmıştır.",
           "choices": ["Samsun"],
-          "correct_answer": "Samsun",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "Samsun"
         },
         {
           "id": 4,
           "question_type": "Boşluk Doldurma Sorusu",
           "question": "1 Kasım 1922'de __________ kaldırılmış ve böylece Osmanlı Devleti'nin resmî olarak sonu gelmiştir.",
           "choices": ["Saltanat"],
-          "correct_answer": "Saltanat",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "Saltanat"
         },
         {
           "id": 5,
           "question_type": "Boşluk Doldurma Sorusu",
           "question": "Lozan Barış Antlaşması, __________ 1923'te imzalanarak Türkiye'nin bağımsızlığı uluslararası alanda tanındı.",
           "choices": ["24 Temmuz"],
-          "correct_answer": "24 Temmuz",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "24 Temmuz"
         },
         {
           "id": 6,
           "question_type": "Çoktan Seçmeli Test Sorusu",
           "question": "Türkiye Büyük Millet Meclisi (TBMM) hangi tarihte açılmıştır?",
           "choices": ["A) 29 Ekim 1923", "B) 23 Nisan 1920", "C) 19 Mayıs 1919", "D) 1 Kasım 1922"],
-          "correct_answer": "B",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "B"
         },
         {
           "id": 7,
           "question_type": "Çoktan Seçmeli Test Sorusu",
           "question": "Aşağıdakilerden hangisi Türkiye Cumhuriyeti'nin ilk cumhurbaşkanıdır?",
           "choices": ["A) İsmet İnönü", "B) Abdülmecid Efendi", "C) Mustafa Kemal Atatürk", "D) Kazım Karabekir"],
-          "correct_answer": "C",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "C"
         },
         {
           "id": 8,
           "question_type": "Çoktan Seçmeli Test Sorusu",
           "question": "Cumhuriyetin ilanından sonra Türkiye’nin benimsemediği yönetim biçimi hangisidir?",
           "choices": ["A) Cumhuriyet", "B) Oligarşi", "C) Monarşi", "D) Demokrasi"],
-          "correct_answer": "C",
-          "student_answer": "",
-          "completion_time": ""
+          "correct_answer": "C"
         }
       ]
     }
@@ -168,18 +153,20 @@ export async function POST(req:any) {
     //return NextResponse.json({result: sampleResponse});
       try {
         const response = await openai.chat.completions.create({
-          model: "gpt-4o-2024-08-06", // Make sure to use a model supporting structured outputs.
+          model: "gpt-4o-mini", 
           messages: [
             {
               role: "system",
-              content: "You are an assistant that generates structured questions for exams based on input text.",
+              content: systemPrompt,
             },
             {
               role: "user",
-              content: prompt,
+              content: userPrompt,
             },
           ],
+          
           response_format: { "type": "json_object" },
+          
         });
     
     
