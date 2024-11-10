@@ -58,6 +58,45 @@ export async function POST(req:any) {
     ]
   `;
 
+  const sysprompt2 = `Verilen ödev metnine dayanarak toplam 9 soru oluştur. Soruların dili ödev metniyle aynı olmalı ve aşağıdaki yapıya göre hazırlanmalı:
+
+1. *Doğru/Yanlış Soruları*: 3 soru
+   - Format: "S[i]: [Soru metni]" | "C[i]: [Doğru veya Yanlış]"
+
+2. *Boşluk Doldurma Soruları*: 3 soru
+   - Format: "S[i]: [Bir kelime eksik bırakılmış soru metni]" | "C[i]: [Doğru kelime]"
+
+3. *Çoktan Seçmeli Sorular*: 3 soru
+   - Format: "S[i]: [Soru metni]" | Şıklar: A) [Seçenek A] B) [Seçenek B] C) [Seçenek C] D) [Seçenek D] | "C[i]: [Doğru seçenek]"
+
+**Geri Dönen JSON Formatı**:
+"questions": [
+      {
+        "id" : 0,
+        "question_type": "Doğru Yanlış Sorusu",
+        "question": "Soru metni",
+        "choices": ["Doğru", "Yanlış"],
+        "correct_answer": "Doğru",
+      },
+      {
+        "id" : 1,
+        "question_type": "Boşluk Doldurma Sorusu",
+        "question": "Kelime eksikliğini içeren soru metni",
+        "choices": ["Doğru kelime"],
+        "correct_answer": "Doğru kelime",
+      },
+      {
+        "id" : 2,
+        "question_type": "Çoktan Seçmeli Test Sorusu",
+        "question": "Soru metni",
+        "choices": ["A) Seçenek", "B) Seçenek", "C) Seçenek", "D) seçenek"],
+        "correct_answer": "A",
+
+      }
+    ]
+
+`
+
   const userPrompt = `
   **Ödev Metni**:
     "${text}"`
@@ -157,7 +196,7 @@ export async function POST(req:any) {
           messages: [
             {
               role: "system",
-              content: systemPrompt,
+              content: sysprompt2,
             },
             {
               role: "user",
