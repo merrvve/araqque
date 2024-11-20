@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
           secure: true,
           path: "/",
           maxAge: expiresIn / 1000, // maxAge in seconds
+          
         };
         cookies().set(cookieOptions);
 
