@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
           role: role || "student", // Default to "student" if role isn't provided
         });
       }
-
+      console.log(decodedClaims)
       return NextResponse.json(
         { isLogged: true, user: { id: uid, email, name, role } },
         { status: 200 }

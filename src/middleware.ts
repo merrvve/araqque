@@ -22,7 +22,8 @@ export async function middleware(request: NextRequest) {
         Cookie: `session=${sessionCookie}`, // Forward the session cookie
       },
     });
-
+    const data = await response.json();
+    console.log(data)
     // If the session is invalid, redirect to login
     if (!response.ok) {
       return NextResponse.redirect(new URL("/login", request.url));

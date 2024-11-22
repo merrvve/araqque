@@ -169,12 +169,12 @@ export default function Login() {
                 </button>
                 
                 
-                <button
-                  type="submit"
+                <a
+                  href="/trainer"
                   className="w-full rounded-lg border border-solid text-black hover:text-white border-black bg-transparent transition-colors flex items-center justify-center text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 "
                 >
                   Eğitici Girişi
-                </button>
+                </a>
                 </form>
                 <button onClick={() => handleGoogleSignIn()}
                   className="w-full flex items-center gap-20 bg-white dark:bg-gray-900 border border-gray-300 rounded-lg shadow-md px-6 py-2 text-gray-800 dark:text-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"

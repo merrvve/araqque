@@ -8,7 +8,9 @@
 
 # testing
 /coverage
-/src/app/lib/firebase-adminsdk.json
+
+/src/lib/firebase-adminsdk.json
+
 # next.js
 /.next/
 /out/

@@ -24,6 +24,7 @@ const auth = getAuth(app);
 export const signInWithEmailPassword = async (email: string, password: string) => {
   const result = await signInWithEmailAndPassword(auth, email, password);
   const { user } = result;
+ 
   const idTokenResult = await user.getIdTokenResult();
   const role = idTokenResult.claims.role || 'student'; // Default to 'student' if no role is found
 
